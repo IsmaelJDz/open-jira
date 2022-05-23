@@ -1,4 +1,5 @@
 import React, { FC, useContext } from 'react';
+import { useRouter } from 'next/router';
 import {
   Card,
   CardActionArea,
@@ -8,6 +9,7 @@ import {
 } from '@mui/material';
 import { Entry } from '../../interfaces';
 import { UIContext } from '../../context/ui';
+import { dateFunctions } from '../../utils';
 
 interface Props {
   entry: Entry;
@@ -15,6 +17,7 @@ interface Props {
 
 export const EntryCard: FC<Props> = ({ entry }) => {
   const { startDragging, endDragging } = useContext(UIContext);
+  const router = useRouter();
 
   const onDragStart = (event: React.DragEvent<HTMLDivElement>) => {
     event.dataTransfer.setData('text/plain', entry._id);
@@ -26,8 +29,13 @@ export const EntryCard: FC<Props> = ({ entry }) => {
     endDragging();
   };
 
+  const onClickCard = (event: React.MouseEvent<HTMLDivElement>) => {
+    router.push(`/entries/${entry._id}`);
+  };
+
   return (
     <Card
+      onClick={onClickCard}
       sx={{ marginBottom: 1 }}
       draggable
       onDragStart={onDragStart}
@@ -45,7 +53,10 @@ export const EntryCard: FC<Props> = ({ entry }) => {
             justifyContent: 'end',
             paddingRight: 2,
           }}>
-          <Typography variant='body2'>hace 30 minutos</Typography>
+          <Typography variant='body2'>
+            hace{' '}
+            {dateFunctions.getFormatDistanceToNow(entry.createdAt)}
+          </Typography>
         </CardActions>
       </CardActionArea>
     </Card>
